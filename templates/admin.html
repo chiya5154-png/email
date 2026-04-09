@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SpamShield — History</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="/"><span class="brand-dot"></span>SPAMSHIELD</a>
+  <div class="nav-links">
+    <a href="/">Detect</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/analytics">Analytics</a>
+    <a href="/admin" class="active">History</a>
+    <a href="/about">About</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+      <div class="theme-knob"><span id="themeIcon">☀️</span></div>
+    </button>
+    <div class="nav-avatar">{{ session.username[0].upper() if session.username else 'U' }}</div>
+    <span class="nav-uname">{{ session.username or 'user' }}</span>
+    <form action="/logout" method="post" style="margin:0">
+      <button type="submit" class="btn-logout">Logout</button>
+    </form>
+  </div>
+</nav>
+<div class="page admin-page">
+  <div class="ph-row">
+    <div>
+      <div class="page-title">EMAIL HISTORY</div>
+      <div class="page-sub">{{ history|length }} emails on record</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <a href="/clear_history" class="btn-sm" onclick="return confirm('Clear all history?')">🗑 Clear All</a>
+      <a href="/" class="btn-sm">+ New</a>
+    </div>
+  </div>
+
+  {% set sc = history|selectattr('result','equalto','spam')|list|length %}
+  {% set hc = history|selectattr('result','equalto','ham')|list|length %}
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <div style="padding:9px 16px;background:var(--surf);border:1px solid var(--bdr2);border-radius:10px;font-size:.82rem;transition:background .35s">📨 Total: <strong style="color:var(--cyan)">{{ history|length }}</strong></div>
+    <div style="padding:9px 16px;background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);border-radius:10px;font-size:.82rem;color:var(--red)">🚨 Spam: <strong>{{ sc }}</strong></div>
+    <div style="padding:9px 16px;background:rgba(0,232,122,.05);border:1px solid rgba(0,232,122,.2);border-radius:10px;font-size:.82rem;color:var(--green)">✅ Ham: <strong>{{ hc }}</strong></div>
+  </div>
+
+  <div class="tcard">
+    <div class="ttoolbar">
+      <div class="si-wrap">
+        <span class="si-icon">🔍</span>
+        <input class="sinput" id="searchInput" type="text" placeholder="Search emails…" oninput="filterTable()"/>
+      </div>
+      <div class="fbtnrow">
+        <button class="fbtn fa active-f" data-filter="all" onclick="setFilter(this,'all')">All</button>
+        <button class="fbtn" onclick="setFilter(this,'spam')">Spam</button>
+        <button class="fbtn" onclick="setFilter(this,'ham')">Ham</button>
+      </div>
+    </div>
+    {% if history %}
+    <table class="htable">
+      <thead><tr><th>#</th><th>Email Preview</th><th>Result</th><th>Category</th><th>Confidence</th><th>Time</th><th>User</th></tr></thead>
+      <tbody>
+        {% for item in history|reverse %}
+        <tr data-result="{{ item.result }}">
+          <td style="color:var(--muted);width:36px">{{ loop.index }}</td>
+          <td title="{{ item.email }}">{{ item.email }}</td>
+          <td><span class="badge {{ 'bs' if item.result=='spam' else 'bh' }}">{{ '🚨' if item.result=='spam' else '✅' }} {{ item.result|upper }}</span></td>
+          <td style="color:var(--muted)">{{ item.category if item.category is defined else '—' }}</td>
+          <td><span class="cpill">{{ item.probability if item.probability is defined else '—' }}%</span></td>
+          <td style="color:var(--muted)">{{ item.timestamp if item.timestamp is defined else '—' }}</td>
+          <td style="color:var(--muted)">{{ item.user if item.user is defined else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state"><div class="ei">📭</div><p>No emails analysed yet.</p><a href="/" class="btn-sm" style="margin-top:14px;display:inline-flex">Start Classifying</a></div>
+    {% endif %}
+  </div>
+</div>
+<div class="toast" id="toast"><span class="tmsg"></span></div>
+</body>
+</html>

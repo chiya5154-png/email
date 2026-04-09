@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SpamShield — Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+<div class="page login-page">
+  <div class="l-orb l-orb1"></div>
+  <div class="l-orb l-orb2"></div>
+  <div style="position:absolute;top:20px;right:24px;z-index:10">
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+      <div class="theme-knob"><span id="themeIcon">☀️</span></div>
+    </button>
+  </div>
+  <div class="login-box">
+    <div class="login-top">
+      <div class="login-shield">🛡️</div>
+      <div class="login-title">SPAMSHIELD</div>
+      <div class="login-sub">AI-Powered Email Security Platform</div>
+    </div>
+    <div class="login-card">
+      {% if error %}<div class="err-box">⚠ {{ error }}</div>{% endif %}
+      <form method="post" action="/login">
+        <div class="fg">
+          <label class="flabel">Username</label>
+          <div class="fi-wrap">
+            <span class="fi-icon">👤</span>
+            <input class="finput" type="text" name="username" placeholder="Enter your username" autocomplete="username" required/>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="flabel">Password</label>
+          <div class="fi-wrap">
+            <span class="fi-icon">🔒</span>
+            <input class="finput" type="password" name="password" placeholder="Enter your password" autocomplete="current-password" required/>
+          </div>
+          <div class="forgot"><a href="#">Forgot password?</a></div>
+        </div>
+        <button type="submit" class="btn-cta">ACCESS SYSTEM</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

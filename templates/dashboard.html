@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SpamShield — Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="/"><span class="brand-dot"></span>SPAMSHIELD</a>
+  <div class="nav-links">
+    <a href="/">Detect</a>
+    <a href="/dashboard" class="active">Dashboard</a>
+    <a href="/analytics">Analytics</a>
+    <a href="/admin">History</a>
+    <a href="/about">About</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+      <div class="theme-knob"><span id="themeIcon">☀️</span></div>
+    </button>
+    <div class="nav-avatar">{{ session.username[0].upper() if session.username else 'U' }}</div>
+    <span class="nav-uname">{{ session.username or 'user' }}</span>
+    <form action="/logout" method="post" style="margin:0">
+      <button type="submit" class="btn-logout">Logout</button>
+    </form>
+  </div>
+</nav>
+<div class="page dash-page">
+  <div class="ph-row">
+    <div>
+      <div class="page-title">DASHBOARD</div>
+      <div class="page-sub">Real-time classification statistics</div>
+    </div>
+    <a href="/" class="btn-sm">+ New Analysis</a>
+  </div>
+
+  <div class="s3">
+    <div class="sc sc-t"><div class="sn">{{ total }}</div><div class="sl">Total Emails</div></div>
+    <div class="sc sc-s"><div class="sn">{{ spam }}</div><div class="sl">Spam Detected</div></div>
+    <div class="sc sc-h"><div class="sn">{{ ham }}</div><div class="sl">Legitimate</div></div>
+  </div>
+
+  <!-- Time-based Spam Tracker -->
+  <div class="time-strip">
+    <div class="ts-card">
+      <div class="ts-icon">📅</div>
+      <div>
+        <div class="ts-num">{{ spam_today }}</div>
+        <div class="ts-lbl">Spam Detected Today</div>
+      </div>
+    </div>
+    <div class="ts-card">
+      <div class="ts-icon">📆</div>
+      <div>
+        <div class="ts-num">{{ spam_yesterday }}</div>
+        <div class="ts-lbl">Spam Detected Yesterday</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dg">
+    <div class="dc2">
+      <h4>📊 Spam vs Ham Distribution</h4>
+      <div class="chart-wrap">
+        {% if total > 0 %}
+        <canvas id="pieChart"></canvas>
+        {% else %}
+        <div class="empty-state" style="padding:30px 0"><div class="ei">📭</div><p>No data yet — analyse some emails first</p></div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="dc2">
+      <h4>🔲 Confusion Matrix (Test Set)</h4>
+      <table class="cm-tbl">
+        <thead><tr><th></th><th>Pred. Ham</th><th>Pred. Spam</th></tr></thead>
+        <tbody>
+          <tr>
+            <th style="text-align:left;padding:11px 12px;font-size:.62rem;color:var(--muted);background:var(--surf2)">Actual Ham</th>
+            <td class="tn">{{ cm[0][0] }}</td><td class="fp">{{ cm[0][1] }}</td>
+          </tr>
+          <tr>
+            <th style="text-align:left;padding:11px 12px;font-size:.62rem;color:var(--muted);background:var(--surf2)">Actual Spam</th>
+            <td class="fn">{{ cm[1][0] }}</td><td class="tp">{{ cm[1][1] }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px;font-size:.71rem;color:var(--muted)">
+        <div>🟢 TN — Correctly Ham</div><div>🟢 TP — Correctly Spam</div>
+        <div>🔴 FP — Ham → Spam</div><div>🔴 FN — Spam → Ham</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dc2">
+    <h4>📈 Model Performance Metrics</h4>
+    <div class="mrow">
+      <div class="mc"><div class="mc-val" data-v="{{ accuracy }}">{{ accuracy }}%</div><div class="mc-lbl">Accuracy</div></div>
+      <div class="mc"><div class="mc-val" data-v="{{ precision }}">{{ precision }}%</div><div class="mc-lbl">Precision</div></div>
+      <div class="mc"><div class="mc-val" data-v="{{ recall }}">{{ recall }}%</div><div class="mc-lbl">Recall</div></div>
+      <div class="mc"><div class="mc-val" data-v="{{ f1 }}">{{ f1 }}%</div><div class="mc-lbl">F1 Score</div></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"><span class="tmsg"></span></div>
+<script>
+document.addEventListener('DOMContentLoaded', () => { drawPieChart({{ spam }}, {{ ham }}); });
+</script>
+</body>
+</html>

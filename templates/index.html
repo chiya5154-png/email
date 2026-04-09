@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SpamShield — Detect</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="/"><span class="brand-dot"></span>SPAMSHIELD</a>
+  <div class="nav-links">
+    <a href="/" class="active">Detect</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/analytics">Analytics</a>
+    <a href="/admin">History</a>
+    <a href="/about">About</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+      <div class="theme-knob"><span id="themeIcon">☀️</span></div>
+    </button>
+    <div class="nav-avatar">{{ session.username[0].upper() if session.username else 'U' }}</div>
+    <span class="nav-uname">{{ session.username or 'user' }}</span>
+    <form action="/logout" method="post" style="margin:0">
+      <button type="submit" class="btn-logout">Logout</button>
+    </form>
+  </div>
+</nav>
+<div class="page home-page">
+  <div class="hero">
+    <div class="hero-badge"><span class="dot"></span>LIVE AI DETECTION</div>
+    <h1><span class="hl">SPAM</span> EMAIL<br>DETECTOR</h1>
+    <p>Paste any email — our Naive Bayes AI classifies it in milliseconds</p>
+  </div>
+  <div class="detect-card">
+    <div class="dc-head">
+      <h3>📧 EMAIL INPUT</h3>
+      <span class="status">AI SYSTEM ONLINE</span>
+    </div>
+    <div class="dc-body">
+      <form action="/predict" method="post" onsubmit="handleSubmit(this.querySelector('button[type=submit]'))">
+        <textarea id="emailInput" class="email-ta" name="email"
+          placeholder="Paste or type email content here…&#10;&#10;Try: Congratulations! You have WON a FREE iPhone. Click here NOW to claim your prize!"
+          oninput="updateCounter()" required></textarea>
+        <div class="char-c" id="charCount">0 chars · 0 words</div>
+        <div class="qf-row">
+          <span style="font-size:.66rem;color:var(--muted);align-self:center;text-transform:uppercase;letter-spacing:1px;margin-right:2px">Try:</span>
+          <span class="qf qf-s" onclick="fillSample('Congratulations! You have WON a FREE iPhone! Click here NOW to claim your prize before it expires!')">🔴 Spam</span>
+          <span class="qf qf-s" onclick="fillSample('URGENT: Your bank account will be suspended! Verify immediately at http://fake-bank.ru/login or lose access forever!')">🔴 Phishing</span>
+          <span class="qf qf-h" onclick="fillSample('Hi team, quick reminder that our weekly sync is at 10am tomorrow. Please review the agenda and come prepared.')">🟢 Work</span>
+          <span class="qf qf-h" onclick="fillSample('Hey! Are you free for lunch on Friday? Let me know what works for you, it would be great to catch up.')">🟢 Personal</span>
+        </div>
+        <div class="da-row">
+          <button type="button" class="btn-clr" onclick="clearInput()">✕ Clear</button>
+          <button type="submit" class="btn-analyse">
+            <span class="btn-text">🔍 ANALYSE EMAIL</span>
+            <span class="spin"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"><span class="tmsg"></span></div>
+</body>
+</html>

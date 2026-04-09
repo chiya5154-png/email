@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SpamShield — About</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="/"><span class="brand-dot"></span>SPAMSHIELD</a>
+  <div class="nav-links">
+    <a href="/">Detect</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/analytics">Analytics</a>
+    <a href="/admin">History</a>
+    <a href="/about" class="active">About</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+      <div class="theme-knob"><span id="themeIcon">☀️</span></div>
+    </button>
+    <div class="nav-avatar">{{ session.username[0].upper() if session.username else 'U' }}</div>
+    <span class="nav-uname">{{ session.username or 'user' }}</span>
+    <form action="/logout" method="post" style="margin:0">
+      <button type="submit" class="btn-logout">Logout</button>
+    </form>
+  </div>
+</nav>
+<div class="page about-page">
+
+  <div class="about-hero">
+    <div style="font-size:3.4rem;margin-bottom:14px">🛡️</div>
+    <h1>ABOUT SPAMSHIELD</h1>
+    <p>An AI-powered email security platform using Machine Learning to detect spam, analyse content, and protect users from phishing in real time.</p>
+  </div>
+
+  <div class="metric-big">
+    <h3>⚙️ How It Works</h3>
+    <ul class="step-list">
+      <li class="step"><div class="step-num">1</div><div class="step-txt"><strong>Email Input</strong><span>User pastes or types the email content into the detection panel.</span></div></li>
+      <li class="step"><div class="step-num">2</div><div class="step-txt"><strong>Text Vectorization</strong><span>Email is transformed into a numerical feature vector using Bag of Words (CountVectorizer).</span></div></li>
+      <li class="step"><div class="step-num">3</div><div class="step-txt"><strong>Naive Bayes Classification</strong><span>Multinomial Naive Bayes predicts spam or legitimate based on word probabilities.</span></div></li>
+      <li class="step"><div class="step-num">4</div><div class="step-txt"><strong>Deep NLP Analysis</strong><span>Additional checks — keyword detection, emotion analysis, trust scoring, difficulty rating, and category classification.</span></div></li>
+      <li class="step"><div class="step-num">5</div><div class="step-txt"><strong>Result & Report</strong><span>Full visual report with confidence score, probability bar, AI badges, and a downloadable PDF.</span></div></li>
+    </ul>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-card">
+      <h3>🤖 AI Features</h3>
+      <ul>
+        <li>Naive Bayes spam classification</li>
+        <li>Spam probability bar (visual AI result)</li>
+        <li>AI confidence badge — HIGH / MEDIUM / LOW</li>
+        <li>Spam difficulty — Easy / Medium / Advanced</li>
+        <li>Email emotion detection (Urgent, Threatening…)</li>
+        <li>Category classifier (Spam, Work, Personal, Promotion)</li>
+        <li>Trust score 0–100 (Spam / Suspicious / Safe)</li>
+      </ul>
+    </div>
+    <div class="about-card">
+      <h3>🔍 Detection Signals</h3>
+      <ul>
+        <li>25+ spam keyword detection with highlighting</li>
+        <li>External URL / link extraction</li>
+        <li>Exclamation mark count analysis</li>
+        <li>Word count and character count</li>
+        <li>Phishing pattern recognition</li>
+        <li>Risk signals panel per email</li>
+        <li>Spam warning popup alert</li>
+      </ul>
+    </div>
+    <div class="about-card">
+      <h3>📊 Dashboard & Analytics</h3>
+      <ul>
+        <li>Chart.js doughnut — Spam vs Ham</li>
+        <li>Confusion matrix from test set</li>
+        <li>Time-based tracker (Today vs Yesterday)</li>
+        <li>7-day spam trend line chart</li>
+        <li>Emotion breakdown bar chart</li>
+        <li>Category breakdown bar chart</li>
+        <li>Average trust score across emails</li>
+      </ul>
+    </div>
+    <div class="about-card">
+      <h3>🛠️ System Features</h3>
+      <ul>
+        <li>Session-based login with logout</li>
+        <li>Light &amp; Dark theme toggle</li>
+        <li>Full email history with search &amp; filter</li>
+        <li>Copy email content &amp; result to clipboard</li>
+        <li>Downloadable styled PDF report</li>
+        <li>Sample email chips for quick testing</li>
+        <li>Animated UI with real-time feedback</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="metric-big">
+    <h3>📈 Model Performance</h3>
+    <div class="mrow">
+      <div class="mc"><div class="mc-val" data-v="{{ accuracy }}">{{ accuracy }}%</div><div class="mc-lbl">Accuracy</div></div>
+      <div class="mc"><div class="mc-val" data-v="{{ precision }}">{{ precision }}%</div><div class="mc-lbl">Precision</div></div>
+      <div class="mc"><div class="mc-val" data-v="{{ recall }}">{{ recall }}%</div><div class="mc-lbl">Recall</div></div>
+      <div class="mc"><div class="mc-val" data-v="{{ f1 }}">{{ f1 }}%</div><div class="mc-lbl">F1 Score</div></div>
+    </div>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-card">
+      <h3>🧠 Machine Learning Stack</h3>
+      <ul>
+        <li>Algorithm: Multinomial Naive Bayes</li>
+        <li>Vectorizer: Bag of Words (CountVectorizer)</li>
+        <li>Library: scikit-learn</li>
+        <li>Dataset: SMS Spam Collection (spam.csv)</li>
+        <li>Train/Test Split: 80% / 20%</li>
+        <li>Model persistence: pickle (.pkl files)</li>
+      </ul>
+    </div>
+    <div class="about-card">
+      <h3>💻 Tech Stack</h3>
+      <ul>
+        <li>Backend: Python + Flask</li>
+        <li>Frontend: HTML5, CSS3, Vanilla JS</li>
+        <li>Charts: Chart.js v4</li>
+        <li>PDF Export: ReportLab</li>
+        <li>Fonts: Orbitron, Rajdhani, JetBrains Mono</li>
+        <li>Themes: CSS variables (Dark + Light)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="metric-big">
+    <h3>📄 Pages in This App</h3>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px">
+      {% for page in [('🔐','Login','Secure session login'),('🔍','Detect','Paste & analyse emails'),('📊','Result','Full AI analysis report'),('📈','Dashboard','Stats, charts & metrics'),('📉','Analytics','Trends, emotions & categories'),('📋','History','Searchable email log'),('ℹ️','About','How it works')] %}
+      <div style="background:var(--surf2);border:1px solid var(--bdr2);border-radius:11px;padding:14px;transition:background .35s">
+        <div style="font-size:1.4rem;margin-bottom:6px">{{ page[0] }}</div>
+        <div style="font-family:'Orbitron',monospace;font-size:.68rem;letter-spacing:1.5px;color:var(--cyan);margin-bottom:4px">{{ page[1] }}</div>
+        <div style="font-size:.8rem;color:var(--muted)">{{ page[2] }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:20px 0 10px;color:var(--muted);font-size:.8rem">
+    Built with 🛡️ &nbsp;|&nbsp; Powered by <span style="color:var(--cyan);font-family:'Orbitron',monospace;font-size:.74rem">Naive Bayes + Flask</span>
+  </div>
+</div>
+<div class="toast" id="toast"><span class="tmsg"></span></div>
+</body>
+</html>

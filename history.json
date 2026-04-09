@@ -1,0 +1,141 @@
+[
+  {
+    "email": "click the link to join the meeting today!!",
+    "result": "spam",
+    "probability": 50.77,
+    "timestamp": "2026-03-12 03:19",
+    "user": "admin"
+  },
+  {
+    "email": "We noticed suspicious activity in your bank account. To avoid account suspension, please verify your details immediately by clicking the link below.\r\nFailure to verify within 12 hours will permanently block your account.",
+    "result": "spam",
+    "probability": 84.61,
+    "timestamp": "2026-03-12 03:23",
+    "user": "admin"
+  },
+  {
+    "email": "We noticed suspicious activity in your bank account. To avoid account suspension, please verify your details immediately by clicking the link below.\r\nFailure to verify within 12 hours will permanently block your account.",
+    "result": "spam",
+    "probability": 84.61,
+    "timestamp": "2026-03-12 03:46",
+    "user": "admin"
+  },
+  {
+    "email": "We noticed suspicious activity in your bank account. To avoid account suspension, please verify your details immediately by clicking the link below.\r\nFailure to verify within 12 hours will permanently block your account.",
+    "result": "spam",
+    "probability": 84.61,
+    "timestamp": "2026-03-12 03:46",
+    "user": "admin"
+  },
+  {
+    "email": "meeting link!!",
+    "result": "ham",
+    "probability": 80.05,
+    "timestamp": "2026-03-12 22:51",
+    "user": "user"
+  },
+  {
+    "email": "happy news about money wins",
+    "result": "spam",
+    "probability": 54.55,
+    "timestamp": "2026-03-12 22:51",
+    "user": "user"
+  },
+  {
+    "email": "click the link",
+    "result": "spam",
+    "probability": 74.94,
+    "timestamp": "2026-03-12 23:12",
+    "user": "user"
+  },
+  {
+    "email": "click here to win this",
+    "result": "spam",
+    "probability": 95.36,
+    "timestamp": "2026-03-12 23:42",
+    "user": "admin",
+    "category": "Spam",
+    "emotion": "Promotional",
+    "trust_score": 0
+  },
+  {
+    "email": "Subject: Congratulations! You Won a Prize\r\n\r\nDear User,\r\n\r\nCongratulations! You have been selected as the lucky winner of a brand new iPhone.\r\n\r\nTo claim your prize, click the link below immediately:\r\n\r\nhttp://free-iphone-reward.xyz/claim\r\n\r\nThis offer expires in 24 hours. Act now!\r\n\r\nBest Regards,\r\nPromo Team",
+    "result": "spam",
+    "probability": 100.0,
+    "timestamp": "2026-03-12 23:44",
+    "user": "admin",
+    "category": "Promotion",
+    "emotion": "Promotional",
+    "trust_score": 0
+  },
+  {
+    "email": "Subject: Meeting Tomorrow\r\n\r\nHi,\r\n\r\nWe have a meeting tomorrow at 10 AM.\r\nPlease join the conference room.\r\n\r\nThanks",
+    "result": "ham",
+    "probability": 99.86,
+    "timestamp": "2026-03-13 00:16",
+    "user": "admin",
+    "category": "General",
+    "emotion": "Friendly",
+    "trust_score": 70
+  },
+  {
+    "email": "click the link",
+    "result": "ham",
+    "probability": 55.62,
+    "timestamp": "2026-03-14 11:05",
+    "user": "user",
+    "category": "General",
+    "emotion": "Neutral",
+    "trust_score": 79
+  },
+  {
+    "email": "\"Limited Offer!!! Get 90% discount on branded shoes. Order now before midnight.\"\r\n\r\n\"Flash Sale: Buy 1 Get 3 FREE on electronics today only. Click to shop.\"",
+    "result": "spam",
+    "probability": 99.91,
+    "timestamp": "2026-03-14 11:14",
+    "user": "user",
+    "category": "Promotion",
+    "emotion": "Promotional",
+    "trust_score": 0
+  },
+  {
+    "email": "click the meeting link",
+    "result": "ham",
+    "probability": 55.62,
+    "timestamp": "2026-03-16 21:22",
+    "user": "user",
+    "category": "General",
+    "emotion": "Friendly",
+    "trust_score": 79
+  },
+  {
+    "email": "congrats..you won $25,000.",
+    "result": "spam",
+    "probability": 56.08,
+    "timestamp": "2026-03-17 12:05",
+    "user": "user",
+    "category": "Spam",
+    "emotion": "Suspicious",
+    "trust_score": 44
+  },
+  {
+    "email": "congrats you won the price",
+    "result": "ham",
+    "probability": 84.94,
+    "timestamp": "2026-04-09 19:12",
+    "user": "admin",
+    "category": "General",
+    "emotion": "Neutral",
+    "trust_score": 75
+  },
+  {
+    "email": "congrats u win 10000 rupees",
+    "result": "spam",
+    "probability": 77.51,
+    "timestamp": "2026-04-09 20:42",
+    "user": "admin",
+    "category": "Spam",
+    "emotion": "Promotional",
+    "trust_score": 18
+  }
+]

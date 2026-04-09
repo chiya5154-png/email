@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SpamShield — Result</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="/"><span class="brand-dot"></span>SPAMSHIELD</a>
+  <div class="nav-links">
+    <a href="/">Detect</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/analytics">Analytics</a>
+    <a href="/admin">History</a>
+    <a href="/about">About</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+      <div class="theme-knob"><span id="themeIcon">☀️</span></div>
+    </button>
+    <div class="nav-avatar">{{ session.username[0].upper() if session.username else 'U' }}</div>
+    <span class="nav-uname">{{ session.username or 'user' }}</span>
+    <form action="/logout" method="post" style="margin:0">
+      <button type="submit" class="btn-logout">Logout</button>
+    </form>
+  </div>
+</nav>
+
+{% if prediction == 'spam' %}
+<div id="spamPopup" class="popup-overlay">
+  <div class="popup-box">
+    <div class="popup-icon">⚠️</div>
+    <div class="popup-title">WARNING</div>
+    <div class="popup-msg">
+      This email appears to be <strong>SPAM</strong>.<br>
+      Do not click any unknown links.<br>
+      Do not share personal information.
+    </div>
+    <button class="popup-close" onclick="document.getElementById('spamPopup').remove()">UNDERSTOOD</button>
+  </div>
+</div>
+{% endif %}
+
+<div class="page result-page">
+
+  {% if prediction == 'spam' %}
+  <div style="text-align:center;margin-bottom:16px;animation:fadeUp .4s ease both">
+    <div class="spam-alert">⚠ SPAM DETECTED</div>
+    <div style="font-size:.84rem;color:var(--muted);margin-top:5px">This email has been flagged by the AI model</div>
+  </div>
+  {% endif %}
+
+  <div class="verdict-block {{ 'sv' if prediction == 'spam' else 'hv' }}">
+    <div class="v-icon">{{ '🚨' if prediction == 'spam' else '✅' }}</div>
+    {% if prediction == 'spam' %}
+    <div id="resultLabel" class="spam-alert">SPAM DETECTED</div>
+    {% else %}
+    <div id="resultLabel" class="ham-label">LEGITIMATE EMAIL</div>
+    {% endif %}
+    <div class="v-sub">{{ 'This email shows strong spam indicators.' if prediction == 'spam' else 'This email appears safe and legitimate.' }}</div>
+    <div class="prob-wrap">
+      <div class="prob-header">
+        <span>🔬 Spam Probability</span>
+        <span class="prob-pct">{{ probability }}%</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" id="probBar" data-v="{{ probability }}" style="width:0%">{{ probability }}%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPAM SCORE METER -->
+  {% if probability >= 70 %}
+    {% set risk_level = "HIGH RISK" %}
+    {% set risk_cls = "meter-high" %}
+    {% set risk_icon = "🔴" %}
+    {% set risk_desc = "Extremely dangerous — do not interact with this email" %}
+    {% set meter_segments = [true, true, true] %}
+  {% elif probability >= 40 %}
+    {% set risk_level = "SUSPICIOUS" %}
+    {% set risk_cls = "meter-mid" %}
+    {% set risk_icon = "🟡" %}
+    {% set risk_desc = "Proceed with caution — treat this email carefully" %}
+    {% set meter_segments = [true, true, false] %}
+  {% else %}
+    {% set risk_level = "SAFE" %}
+    {% set risk_cls = "meter-safe" %}
+    {% set risk_icon = "🟢" %}
+    {% set risk_desc = "Low risk — this email appears to be legitimate" %}
+    {% set meter_segments = [true, false, false] %}
+  {% endif %}
+
+  <div class="spam-meter-card">
+    <div class="sm-header">
+      <span class="sm-title">🎯 SPAM RISK METER</span>
+      <span class="sm-badge {{ risk_cls }}">{{ risk_icon }} {{ risk_level }}</span>
+    </div>
+
+    <!-- Meter Display -->
+    <div class="sm-body">
+      <div class="sm-score-row">
+        <div class="sm-score {{ risk_cls }}">{{ probability }}%</div>
+        <div class="sm-score-lbl">Spam Risk Score</div>
+      </div>
+
+      <!-- Segmented Meter Bar -->
+      <div class="sm-meter">
+        <div class="sm-seg sm-seg-safe  {{ 'sm-active' if probability > 0  else '' }}" style="width:40%">
+          <span class="sm-seg-lbl">SAFE<br><small>0–40%</small></span>
+        </div>
+        <div class="sm-seg sm-seg-sus   {{ 'sm-active' if probability >= 40 else '' }}" style="width:30%">
+          <span class="sm-seg-lbl">SUSPICIOUS<br><small>40–70%</small></span>
+        </div>
+        <div class="sm-seg sm-seg-spam  {{ 'sm-active' if probability >= 70 else '' }}" style="width:30%">
+          <span class="sm-seg-lbl">SPAM<br><small>70–100%</small></span>
+        </div>
+        <!-- Needle indicator -->
+        <div class="sm-needle" id="smNeedle" data-v="{{ probability }}" style="left:0%"></div>
+      </div>
+
+      <!-- Scale labels -->
+      <div class="sm-scale">
+        <span>0%</span><span>40%</span><span>70%</span><span>100%</span>
+      </div>
+
+      <!-- Risk description -->
+      <div class="sm-desc {{ risk_cls }}">
+        <span class="sm-desc-icon">{{ risk_icon }}</span>
+        <div>
+          <strong>{{ risk_level }}</strong> — {{ risk_desc }}
+        </div>
+      </div>
+
+      <!-- Risk level cards -->
+      <div class="sm-levels">
+        <div class="sm-lvl {{ 'sm-lvl-active' if probability < 40 else '' }} sm-lvl-s">
+          <div class="sm-lvl-dot"></div>
+          <div class="sm-lvl-name">SAFE</div>
+          <div class="sm-lvl-range">0 – 40%</div>
+        </div>
+        <div class="sm-lvl {{ 'sm-lvl-active' if probability >= 40 and probability < 70 else '' }} sm-lvl-m">
+          <div class="sm-lvl-dot"></div>
+          <div class="sm-lvl-name">SUSPICIOUS</div>
+          <div class="sm-lvl-range">40 – 70%</div>
+        </div>
+        <div class="sm-lvl {{ 'sm-lvl-active' if probability >= 70 else '' }} sm-lvl-h">
+          <div class="sm-lvl-dot"></div>
+          <div class="sm-lvl-name">HIGH RISK</div>
+          <div class="sm-lvl-range">70 – 100%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Stats -->
+  <div class="email-stats">
+    <div class="estat"><div class="estat-num">{{ word_count }}</div><div class="estat-lbl">Words</div></div>
+    <div class="estat"><div class="estat-num">{{ char_count }}</div><div class="estat-lbl">Characters</div></div>
+    <div class="estat"><div class="estat-num">{{ exclamations }}</div><div class="estat-lbl">Exclamations</div></div>
+  </div>
+
+  <!-- AI Badges Row -->
+  <div class="badges-row">
+    <div class="ai-badge">
+      <div class="ab-lbl">⚡ Difficulty</div>
+      <div class="ab-val {{ diff_cls }}">{{ difficulty }}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px">{{ diff_desc }}</div>
+    </div>
+    <div class="ai-badge">
+      <div class="ab-lbl">💬 Emotion</div>
+      <div class="ab-val">{{ emotion_icon }} {{ emotion }}</div>
+    </div>
+    <div class="ai-badge">
+      <div class="ab-lbl">🏷️ Category</div>
+      <div class="ab-val">{{ cat_icon }} {{ category }}</div>
+    </div>
+    <div class="ai-badge">
+      <div class="ab-lbl">🛡️ Trust Score</div>
+      <div class="ab-val {{ trust_cls }}">{{ trust_score }} / 100</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px">{{ trust_label }}</div>
+    </div>
+    <div class="ai-badge">
+      <div class="ab-lbl">🤖 AI Confidence</div>
+      <div class="ab-val {{ conf_cls }}">{{ conf_badge }}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px">{{ probability }}% certainty</div>
+    </div>
+    <div class="ai-badge">
+      <div class="ab-lbl">🔗 Links Found</div>
+      <div class="ab-val {{ 'rh' if links|length > 0 else 'rl' }}">{{ links|length }} URL{{ 's' if links|length != 1 else '' }}</div>
+    </div>
+  </div>
+
+  <!-- Analysis Grid -->
+  <div class="ag">
+    <div class="ac">
+      <div class="act">⚡ Risk Signals</div>
+      <div class="risk-row"><span class="risk-lbl">Spam Keywords</span><span class="risk-badge {{ 'rh' if keywords|length > 0 else 'rl' }}">{{ keywords|length }} found</span></div>
+      <div class="risk-row"><span class="risk-lbl">External Links</span><span class="risk-badge {{ 'rh' if links|length > 0 else 'rl' }}">{{ links|length }} found</span></div>
+      <div class="risk-row"><span class="risk-lbl">Word Count</span><span class="risk-badge {{ 'rm' if word_count > 50 else 'rl' }}">{{ word_count }} words</span></div>
+      <div class="risk-row"><span class="risk-lbl">Exclamations</span><span class="risk-badge {{ 'rh' if exclamations > 2 else 'rl' }}">{{ exclamations }}</span></div>
+      <div class="risk-row" style="margin-bottom:0"><span class="risk-lbl">Algorithm</span><span class="risk-badge rl">Naive Bayes</span></div>
+    </div>
+    <div class="ac">
+      <div class="act">🔑 Detected Keywords</div>
+      {% if keywords %}
+      <ul class="kw-list">{% for k in keywords %}<li>{{ k }}</li>{% endfor %}</ul>
+      {% else %}
+      <div class="tags"><span class="tag tnone">✅ No spam keywords detected</span></div>
+      {% endif %}
+      <div class="act" style="margin-top:15px">🔗 URLs Found</div>
+      <div class="tags">
+        {% if links %}{% for l in links %}<span class="tag tlk" title="{{ l }}">{{ l[:34] }}{{ '…' if l|length > 34 else '' }}</span>{% endfor %}
+        {% else %}<span class="tag tnone">No links found</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Preview -->
+  <div class="ep-card">
+    <div class="ep-head">
+      <span>📄 Analysed Email</span>
+      <span style="color:var(--cyan)">{{ word_count }} words · {{ char_count }} chars</span>
+    </div>
+    <div class="ep-body" id="epBody">{{ email_input }}</div>
+    <button class="copy-btn" onclick="copyEmail()">📋 Copy Email Content</button>
+  </div>
+
+  <!-- Actions -->
+  <div class="ra">
+    <a href="/" class="btn-a btn-ap">🔍 Analyse Another</a>
+    <a href="/download" class="btn-a btn-ag">⬇ PDF Report</a>
+    <button class="btn-a btn-ag" onclick="copyResult()">📋 Copy Result</button>
+    <a href="/dashboard" class="btn-a btn-ag">📊 Dashboard</a>
+    <a href="/analytics" class="btn-a btn-ag">📉 Analytics</a>
+  </div>
+
+</div>
+<div class="toast" id="toast"><span class="tmsg"></span></div>
+</body>
+</html>

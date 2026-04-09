@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SpamShield — Analytics</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="/"><span class="brand-dot"></span>SPAMSHIELD</a>
+  <div class="nav-links">
+    <a href="/">Detect</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/analytics" class="active">Analytics</a>
+    <a href="/admin">History</a>
+    <a href="/about">About</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+      <div class="theme-knob"><span id="themeIcon">☀️</span></div>
+    </button>
+    <div class="nav-avatar">{{ session.username[0].upper() if session.username else 'U' }}</div>
+    <span class="nav-uname">{{ session.username or 'user' }}</span>
+    <form action="/logout" method="post" style="margin:0">
+      <button type="submit" class="btn-logout">Logout</button>
+    </form>
+  </div>
+</nav>
+<div class="page analytics-page">
+  <div class="ph-row">
+    <div>
+      <div class="page-title">ANALYTICS</div>
+      <div class="page-sub">Trends, emotions & category breakdowns</div>
+    </div>
+    <a href="/" class="btn-sm">+ New Analysis</a>
+  </div>
+
+  <div class="stat-cards">
+    <div class="s-card"><div class="s-card-num">{{ total }}</div><div class="s-card-lbl">Total Emails</div></div>
+    <div class="s-card"><div class="s-card-num">{{ emotions|length }}</div><div class="s-card-lbl">Emotion Types</div></div>
+    <div class="s-card"><div class="s-card-num">{{ categories|length }}</div><div class="s-card-lbl">Categories</div></div>
+    <div class="s-card"><div class="s-card-num">{{ avg_trust }}</div><div class="s-card-lbl">Avg Trust Score</div></div>
+  </div>
+
+  <!-- 7-Day Trend Chart -->
+  <div class="dc2" style="margin-bottom:14px">
+    <h4>📈 7-Day Spam Trend</h4>
+    <div class="chart-wrap">
+      {% if total > 0 %}
+      <canvas id="trendChart"></canvas>
+      {% else %}
+      <div class="empty-state" style="padding:30px 0"><div class="ei">📭</div><p>No data yet</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="an-grid">
+    <!-- Emotion Breakdown -->
+    <div class="an-card">
+      <h4>💬 Emotion Breakdown</h4>
+      {% if emotions %}
+        {% set max_e = emotions.values()|list|max %}
+        {% for emo, cnt in emotions.items() %}
+        <div class="bar-item">
+          <div class="bar-label"><span>{{ emo }}</span><span>{{ cnt }}</span></div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:{{ (cnt / max_e * 100)|int }}%;background:var(--cyan)"></div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+      <div style="color:var(--muted);font-size:.86rem;padding:20px 0">No emotion data yet.</div>
+      {% endif %}
+    </div>
+
+    <!-- Category Breakdown -->
+    <div class="an-card">
+      <h4>🏷️ Category Breakdown</h4>
+      {% if categories %}
+        {% set max_c = categories.values()|list|max %}
+        {% set colors_map = {'Spam':'var(--red)','Promotion':'var(--yellow)','Work':'var(--cyan)','Personal':'var(--green)','General':'var(--muted)'} %}
+        {% for cat, cnt in categories.items() %}
+        <div class="bar-item">
+          <div class="bar-label"><span>{{ cat }}</span><span>{{ cnt }}</span></div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:{{ (cnt / max_c * 100)|int }}%;background:{{ colors_map.get(cat,'var(--cyan)') }}"></div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+      <div style="color:var(--muted);font-size:.86rem;padding:20px 0">No category data yet.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"><span class="tmsg"></span></div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const trend = {{ trend|safe }};
+  const ctx = document.getElementById('trendChart');
+  if (!ctx || !trend.length) return;
+  const isLight = document.body.classList.contains('light');
+  const textColor = isLight ? '#334155' : '#8aa8c8';
+  const gridColor = isLight ? 'rgba(37,99,235,0.1)' : 'rgba(0,212,255,0.08)';
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: trend.map(d => d.label),
+      datasets: [
+        { label: 'Spam', data: trend.map(d => d.spam), borderColor: '#ff3366', backgroundColor: 'rgba(255,51,102,0.12)', tension: 0.4, fill: true, pointBackgroundColor: '#ff3366', pointRadius: 5 },
+        { label: 'Ham',  data: trend.map(d => d.ham),  borderColor: '#00e87a', backgroundColor: 'rgba(0,232,122,0.09)',  tension: 0.4, fill: true, pointBackgroundColor: '#00e87a', pointRadius: 5 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: textColor, font: { family:'Rajdhani', size:13, weight:'700' }, usePointStyle: true } } },
+      scales: {
+        x: { ticks: { color: textColor, font:{family:'JetBrains Mono',size:11} }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor, font:{family:'JetBrains Mono',size:11}, stepSize:1 }, grid: { color: gridColor }, beginAtZero: true }
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>
